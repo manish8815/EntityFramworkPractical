@@ -1,0 +1,395 @@
+﻿@*@model List<EntityFrameworkPractical.Models.Domain.Employee>*@
+@model EntityFrameworkPractical.Models.EmployeeViewModel
+@{
+}
+<table>
+    <tr>
+        <td>
+            <h1>Employees</h1>
+        </td>
+        <td>&nbsp;</td>
+        <td>
+
+            <select id="dropdown" onchange="setUrl()">
+                <option value="10">Select Page Size</option>
+                <option value="5">5</option>
+                <option value="8">8</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="40">40</option>
+            </select>
+
+        </td>
+        <td>
+            <form method="post" action="@Url.Action("Index","Employees",new {Page_no=0, Page_Size=ViewData["Pg_size"],Emp_Name=ViewData["Ename"],CountryIds=ViewBag.CountryIds,DepartmentIds=ViewBag.DepartmentIds})">
+                <input type="text" name="Emp_Name" />
+
+
+
+                <select id="CountryIds" name="CountryIds" class="selectpicker" multiple aria-label="Default select example" data-live-search="true">
+
+                    @foreach (var employee in Model.employees2.DistinctBy(x => x.Country))
+                    {
+                        <option value="@employee.Country">@employee.Country</option>
+                    }
+                </select>
+                <select id="DepartmentIds" name="DepartmentIds" class="selectpicker" multiple aria-label="Default select example" data-live-search="true">
+                        @foreach (var employee in Model.employees2.DistinctBy(x => x.Department))
+                    {
+                        <option value="@employee.Department">@employee.Department</option>
+                    }
+                </select>
+                @*Age range selector*@
+                <div class="range">
+                    <div class="range-slider">
+                        <span class="range-selected"></span>
+                    </div>
+                    <div class="range-input">
+                        <input type="range" class="min" min="0" max="100" value="0" step="1">
+                        <input type="range" class="max" min="0" max="100" value="100" step="1">
+                    </div>
+                    <div class="range-price">
+                        <label for="min">Min</label>
+                        <input type="number" name="min" value="@ViewBag.minAge">
+                        <label for="max">Max</label>
+                        <input type="number" name="max" value="@ViewBag.maxAge">
+                    </div>
+                </div>
+
+                <style>
+                    .range-slider {
+                    height: 5px;
+                    position: relative;
+                    background-color: #e1e9f6;
+                    border-radius: 2px;
+                    }
+                    .range-selected {
+                    height: 100%;
+                    left: 0%;
+                    right: 0%;
+                    position: absolute;
+                    border-radius: 5px;
+                    background-color: #1b53c0;
+                    }
+
+                    .range-input {
+                        position: relative;
+                    }
+
+                    .range-input input {
+                        position: absolute;
+                        width: 100%;
+                        height: 5px;
+                        top: -7px;
+                        background: none;
+                        pointer-events: none;
+                        -webkit-appearance: none;
+                        -moz-appearance: none;
+                    }
+
+                        .range-input input::-webkit-slider-thumb {
+                            height: 20px;
+                            width: 20px;
+                            border-radius: 50%;
+                            border: 3px solid #1b53c0;
+                            background-color: #fff;
+                            pointer-events: auto;
+                            -webkit-appearance: none;
+                        }
+
+                        .range-input input::-moz-range-thumb {
+                            height: 15px;
+                            width: 15px;
+                            border-radius: 50%;
+                            border: 3px solid #1b53c0;
+                            background-color: #fff;
+                            pointer-events: auto;
+                            -moz-appearance: none;
+                        }
+
+                    .range-price {
+                        margin: 30px 0;
+                        width: 100%;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+
+                    .range-price label {
+                        margin-right: 5px;
+                    }
+
+                    .range-price input {
+                        width: 100px;
+                        padding: 5px;
+                    }
+
+                        .range-price input:first-of-type {
+                            margin-right: 15px;
+                        }
+                </style>
+                @*Age range selector end*@
+                <input type="submit" value="Search" />
+            </form>
+        </td>
+    </tr>
+</table>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                <div id="idDiv">Id<i id="Idup" class="bi bi-arrow-up" style="display:@ViewData["Idup"]"></i><i id="Iddown" class="bi bi-arrow-down" style="display:@ViewData["Iddown"]"></i></div>
+                <form id="id_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Id" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="mnin" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="maax" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+            <th>
+                @*<a onclick="handleClick('name')">Name</a>*@
+                @* <a asp-action="Index" asp-route-Chronology="@ViewData["Chronooo"]">Name</a>*@
+                <div id="nameDiv">Name<i id="Nameup" class="bi bi-arrow-up" style="display:@ViewData["Nameup"]"></i><i id="Namedown" class="bi bi-arrow-down" style="display:@ViewData["Namedown"]"></i></div>
+                <form id="name_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Name" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="min" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+            <th>
+                <div id="emailDiv">Email<i id="Emailup" class="bi bi-arrow-up" style="display:@ViewData["Emailup"]"></i><i id="Emaildown" class="bi bi-arrow-down" style="display:@ViewData["Emaildown"]"></i></div>
+                <form id="email_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Email" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewBag.minAge" name="min" />
+                    <input type="hidden" value="@ViewBag.maxAge" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+            <th>
+                <div id="salaryDiv">Salary<i id="Salaryup" class="bi bi-arrow-up" style="display:@ViewData["Salaryup"]"></i><i id="Salarydown" class="bi bi-arrow-down" style="display:@ViewData["Salarydown"]"></i></div>
+                <form id="salary_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Salary" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="min" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+            <th>
+                <div id="dobDiv">DOB<i id="DOBup" class="bi bi-arrow-up" style="display:@ViewData["DOBup"]"></i><i id="DOBdown" class="bi bi-arrow-down" style="display:@ViewData["DOBdown"]"></i></div>
+                <form id="dob_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="DOB" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="min" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+            <th>
+                <div id="departmentDiv">Department <i id="Departmentup" class="bi bi-arrow-up" style="display:@ViewData["Departmentup"]"></i><i id="Departmentdown" class="bi bi-arrow-down" style="display:@ViewData["Departmentdown"]"></i></div>
+                <form id="department_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Department" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="min" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+
+            <th>
+                <div id="countryDiv">Country <i id="Countryup" class="bi bi-arrow-up" style="display:@ViewData["Countryup"]"></i><i id="Departmentdown" class="bi bi-arrow-down" style="display:@ViewData["Countrydown"]"></i></div>
+                <form id="country_form" method="post" asp-controller="Employees" asp-action="Index">
+                    <input type="hidden" value="Country" name="flag" />
+                    <input type="hidden" value="@ViewData["Ename"]" name="Emp_Name" />
+                    <input type="hidden" value="@ViewData["Chronooo"]" name="Chronology" />
+                    <input type="hidden" value="@ViewData["prev_Column"]" name="Prev_Column" />
+                    <input type="hidden" value="@ViewData["minAge"]" name="min" />
+                    <input type="hidden" value="@ViewData["maxAge"]" name="max" />
+                    <input type="hidden" value="@ViewBag.CountryIds" name="CountryIds" />
+                    <input type="hidden" value="@ViewBag.DepartmentIds" name="DepartmentIds" />
+                </form>
+            </th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        @foreach (var employee in Model.employees)
+        {
+            <tr>
+                <td>@employee.Id</td>
+                <td>@employee.Name</td>
+                <td>@employee.Email</td>
+                <td>@employee.Salary</td>
+                <td>@employee.DOB.ToString("dd-mm-yyyy")</td>
+                <td>@employee.Department</td>
+                <td>@employee.Country</td>
+                <td><a href="Employees/View1/@employee.Id">View</a></td>
+                @*<td><a href="Employees/Delete/@employee.Id">Delete</a></td>*@
+                <td><a href="@Url.Action("Delete","Employees",new {Id=employee.Id})">Delete</a></td> <!--Recommended method-->
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<table>
+    <tr>
+
+        <td><a href="@Url.Action("Index","Employees", new{Page_no=(ViewBag.page_no)-1,Page_Size=ViewData["Pg_size"],Emp_Name=ViewData["Ename"] ,Chronology = ViewData["Chronooo"], flag=ViewData["flag"], isPaging = 1,CountryIds=ViewBag.CountryIds,DepartmentIds=ViewBag.DepartmentIds,min=ViewData["minAge"],max=ViewData["maxAge"]})"><button id="Prev_Button">Prev</button></a></td>
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            @if (ViewBag.page_no == 0)
+            {
+                <style>
+                    #Prev_Button {
+                        display: none;
+                    }
+                </style>
+            }
+            @if (ViewBag.page_no == (ViewBag.TotalPages) - 1)
+            {
+                <style>
+                    #Next_Button {
+                        display: none;
+                    }
+                </style>
+            }
+            @if (@i - 1 != ViewBag.page_no)
+            {
+                <td> <a onclick="Re" href="@Url.Action("Index","Employees", new{Page_no=@i-1,Page_Size=ViewData["Pg_size"],Emp_Name=ViewData["Ename"] ,Chronology = ViewData["Chronooo"], flag=ViewData["flag"], isPaging = 1, CountryIds=ViewBag.CountryIds,DepartmentIds=ViewBag.DepartmentIds,min=ViewData["minAge"],max=ViewData["maxAge"]})">@i</a>&nbsp</td>
+                @*<td> <a onclick="Re" href="@Url.Action("Index","Employees", new{Page_no=@i-1,Page_Size=ViewData["Pg_size"],Emp_Name=ViewData["Ename"]})">@i</a>&nbsp</td>*@
+            }
+            else
+            {
+                <td><button style="color:red">@i &nbsp;</button></td>
+            }
+        }
+        <td><a href="@Url.Action("Index","Employees", new{Page_no=(ViewBag.page_no)+1,Page_Size=ViewData["Pg_size"],Emp_Name=ViewData["Ename"] ,Chronology = ViewData["Chronooo"], flag=ViewData["flag"], isPaging = 1, CountryIds=ViewBag.CountryIds,DepartmentIds=ViewBag.DepartmentIds,min=ViewData["minAge"],max=ViewData["maxAge"]})"><button id="Next_Button">Next</button></a></td>
+    </tr>
+
+
+
+</table>
+
+@section Scripts{
+    <script>
+        $("#idDiv").click(function () { $("#id_form").submit(); })
+        $("#nameDiv").click(function () { $("#name_form").submit(); })
+        $("#emailDiv").click(function () { $("#email_form").submit(); })
+        $("#salaryDiv").click(function () { $("#salary_form").submit(); })
+        $("#dobDiv").click(function () { $("#dob_form").submit(); })
+        $("#departmentDiv").click(function () { $("#department_form").submit(); })
+        $("#countryDiv").click(function () { $("#country_form").submit(); })
+        function setUrl() {
+            $("#dropdown").val()
+            var url = window.location.href;
+            var splitted_url = url.split("=");
+            url = splitted_url[0] + "=" + "0" + splitted_url[1].slice(1) + "=" + $("#dropdown").val();
+            window.location.href = url;
+        }
+
+        //Range slider script
+            $(document).ready(function () {
+                const rangeSlider = $('.range-slider');
+                const rangeSelected = $('.range-selected');
+                const minInput = $('.min');
+                const maxInput = $('.max');
+                const minPriceInput = $('input[name="min"]');
+                const maxPriceInput = $('input[name="max"]');
+                 
+                minInput.on('input', updateSlider);
+                maxInput.on('input', updateSlider);
+
+                updateSlider();
+            });
+
+        function updateSlider() {
+            
+
+            const min = parseInt(minInput.val());
+            const max = parseInt(maxInput.val());
+            const range = max - min;
+            const rangePercentage = (range / 100) * 100;
+            const minPercentage = (min / 100) * 100;
+
+            rangeSelected.css('left', minPercentage + '%');
+            rangeSelected.css('right', 100 - (minPercentage + rangePercentage) + '%');
+
+            //minPriceInput.val(min);
+            //maxPriceInput.val(max);
+        }
+        //Range slider script end
+    </script>
+}
+
+@* //function handleClick(val) {
+            //    debugger;
+            //    console.log("hello");
+            //    var url = window.location.href;
+            //    var valueOfurl = url.charAt(url.length - 1);
+            //    //alert(valueOfurl);
+            //    //url = url.substring(0, url.length - 1);
+            //    //alert(url);
+            //    if(url.length==55)
+            //    {
+            //        if (valueOfurl === "0")
+            //        {
+            //            url = url.substring(0, url.length ) + "&Chronology=1";
+            //            // window.location.assign(url);
+            //            location.replace(url);
+            //        }
+
+            //        else
+            //        {
+            //            url = url.substring(0, url.length ) + "&Chronology=0";
+            //            // window.location.assign(url);
+            //            location.replace(url);
+
+            //        }
+
+            //    }
+            //    else
+            //    {
+            //        if (valueOfurl === "0") {
+            //            url = url.substring(0, url.length - 13);
+            //            url = url.substring(0, url.length) + "&Chronology=1";
+            //            // window.location.assign(url);
+            //            location.replace(url);
+            //        }
+
+            //        else {
+            //            url = url.substring(0, url.length-13);
+            //            url = url.substring(0, url.length) + "&Chronology=0";
+            //            // window.location.assign(url);
+            //            location.replace(url);
+
+            //        }
+
+            //    }
+            //}*@
+
+
